@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "65411650756",
+    "project_id": "pokemon-apps-f9800",
+    "storage_bucket": "pokemon-apps-f9800.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:65411650756:android:3d2182db5926df1040e591",
+        "android_client_info": {
+          "package_name": "com.pokemonapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "65411650756-553r05pns4enpll8ec9omolvamhcbou2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pokemonapp",
+            "certificate_hash": "307824013521f4fae0a02962875575d3d4c10c95"
+          }
+        },
+        {
+          "client_id": "65411650756-66dliqbt72jrjdq5e4njaq0auanfakhs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2IAuFncDHVuTfOyTQlyf4z7LYdd2keYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "65411650756-66dliqbt72jrjdq5e4njaq0auanfakhs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
