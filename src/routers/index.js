@@ -1,28 +1,21 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Login, Register, Home} from '../screens';
+import {Login, Register, Home, Detail, pokeBag} from '../screens';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Top from './top';
 
 const Stack = createNativeStackNavigator();
 
 const Router = () => {
   return (
-    <Stack.Navigator initialRouteName="Home">
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Register"
-        component={Register}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{headerShown: false}}
-      />
+    <Stack.Navigator
+      initialRouteName="Home"
+      screenOptions={{headerShown: false}}>
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Detail" component={Detail} />
+      <Stack.Screen name="Top" component={Top} />
     </Stack.Navigator>
   );
 };
