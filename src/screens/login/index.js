@@ -8,36 +8,54 @@ import {
   Alert,
 } from 'react-native';
 import React from 'react';
+
+import {useDispatch} from 'react-redux';
+import {setUser} from './redux/action';
+import auth from '@react-native-firebase/auth';
+import messagingProvider from '@react-native-firebase/messaging';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import auth from '@react-native-firebase/auth';
 import Input from '../../commponent/input';
 import {myDb} from '../../helpers/myDb';
 
+const messaging = messagingProvider();
+
 const Login = ({navigation}) => {
+  const dispatch = useDispatch();
   const handleSubmit = async values => {
     try {
-      // const res = await auth().signInWithEmailAndPassword(
-      //   values.email,
-      //   values.password,
-      // );
-      // console.log(res);
-      await myDb
-        .ref(`users/`)
-        .orderByChild('emailId')
-        .equalTo(values.email)
-        .once('value')
-        .then(() => {
-          Alert.alert('Registrasi Berhasil', 'silahkan login', [
-            {
-              text: 'Next',
-              onPress: () => {
-                console.log(values);
-                navigation.navigate('Home');
-              },
-            },
-          ]);
-        });
+      const res = await auth().signInWithEmailAndPassword(
+        values.email,
+        values.password,
+      );
+      const token = await messaging.getToken();
+      console.log(res);
+      if (token) {
+        let isUpdate = false;
+        await myDb.ref(`users/${res.user.uid}`).update({notifToken: token});
+        isUpdate = true;
+
+        if (isUpdate) {
+          const result = await myDb
+            .ref(`users/`)
+            .orderByChild('emailId')
+            .equalTo(values.email)
+            .once('value')
+            .then(async snapshot => {
+              if (snapshot.val() == null) {
+                Alert.alert('Invalid Email Id');
+                return false;
+              }
+              let userData = Object.values(snapshot.val())[0];
+              navigation.replace('Home');
+            });
+          // console.log(result);
+          // if (result.val) {
+          //   dispatch(setUser(result.val()));
+          //   navigation.replace('Home');
+          // }
+        }
+      }
     } catch (error) {
       Alert.alert('Error', 'Not Found User');
     }

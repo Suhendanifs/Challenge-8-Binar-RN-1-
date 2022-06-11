@@ -12,29 +12,13 @@ import {Formik} from 'formik';
 import uuid from 'react-native-uuid';
 import * as Yup from 'yup';
 import auth from '@react-native-firebase/auth';
+import messagingProvider from '@react-native-firebase/messaging';
 import Input from '../../commponent/input';
 import {myDb} from '../../helpers/myDb';
 
+const messaging = messagingProvider();
+
 const Register = ({navigation}) => {
-  // const [userState, setUserState] = useState({
-  //   username: '',
-  //   email: '',
-  //   password: '',
-  // });
-  // const handleSubmit = values =>
-  //   auth()
-  //     .createUserWithEmailAndPassword(values.email, values.password)
-  //     .then(() => {
-  //       Alert.alert('Registrasi Berhasil', 'silahkan login', [
-  //         {
-  //           text: 'Next',
-  //           onPress: () => {
-  //             console.log(values);
-  //             navigation.navigate('Login');
-  //           },
-  //         },
-  //       ]);
-  //     });
   const handleSubmit = async values => {
     let data = {
       id: uuid.v4(),
@@ -47,20 +31,30 @@ const Register = ({navigation}) => {
         values.email,
         values.password,
       );
+
+      const token = await messaging.getToken();
+      if (token) {
+        const payload = {
+          displayname: data.name,
+          email: data.emailId,
+          notifToken: token,
+          id: data.id,
+        };
+        await myDb.ref(`users/${data.id}`).set(payload);
+        Alert.alert('Registrasi Berhasil', 'silahkan login', [
+          {
+            text: 'Next',
+            onPress: () => {
+              console.log(values);
+              navigation.navigate('Login');
+            },
+          },
+        ]);
+      }
       await myDb
         .ref(`users/${data.id}`)
         .set(data)
-        .then(() => {
-          Alert.alert('Registrasi Berhasil', 'silahkan login', [
-            {
-              text: 'Next',
-              onPress: () => {
-                console.log(values);
-                navigation.navigate('Login');
-              },
-            },
-          ]);
-        });
+        .then(() => {});
     } catch (error) {
       Alert.alert('Error', error);
     }

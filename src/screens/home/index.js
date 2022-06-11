@@ -21,14 +21,14 @@ const Home = ({navigation}) => {
   }, [currentOffset]);
   const getDataPokemon = async () => {
     try {
-      const res = await axios.get(`${baseApi}/pokemon?offset=${page}&limit=10`);
-      setPokemon([...pokemon, ...res.data.results]);
+      const res = await axios.get(`${baseApi}?offset=${page}&limit=20`);
+      setPokemon([...res.data.results]);
     } catch (error) {
       console.log(error);
     }
   };
   const nextPage = useCallback(() => {
-    setCurrentOffset(currentOffset + 10);
+    setCurrentOffset(currentOffset + 1);
     setPage(page + 1);
   }, [currentOffset, setPage]);
 
@@ -36,7 +36,7 @@ const Home = ({navigation}) => {
     if (currentOffset <= 0) {
       return;
     } else {
-      setCurrentOffset(currentOffset - 10);
+      setCurrentOffset(currentOffset - 1);
       setPage(page - 1);
     }
   }, [currentOffset, setPage]);
@@ -50,7 +50,7 @@ const Home = ({navigation}) => {
       <View>
         <Text
           style={{
-            fontSize: 26,
+            fontSize: 20,
             fontWeight: 'bold',
             marginHorizontal: 10,
             padding: 10,
@@ -74,23 +74,23 @@ const Home = ({navigation}) => {
         <TouchableOpacity
           onPress={prevPage}
           style={{
-            backgroundColor: '#f17531',
+            backgroundColor: '#bb35a1',
             paddingVertical: 14,
             paddingHorizontal: 12,
             borderRadius: 10,
           }}>
-          <Text style={{color: '#fff'}}>Sebelumnya</Text>
+          <Text style={{color: '#fff'}}>Prev</Text>
         </TouchableOpacity>
         <Text style={{marginHorizontal: 10, color: 'black'}}>{page}</Text>
         <TouchableOpacity
           onPress={nextPage}
           style={{
-            backgroundColor: '#57b7dd',
+            backgroundColor: '#77b7db',
             paddingVertical: 14,
             paddingHorizontal: 12,
             borderRadius: 10,
           }}>
-          <Text style={{color: '#fff'}}>Berikutnya</Text>
+          <Text style={{color: '#fff'}}>Next</Text>
         </TouchableOpacity>
       </View>
     );
@@ -98,11 +98,11 @@ const Home = ({navigation}) => {
   return (
     <View>
       <FlatList
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
         data={pokemon}
         renderItem={renderItem}
         numColumns={2}
-        ListHeaderComponent={renderHeader}
-        ListFooterComponent={renderFooter}
       />
     </View>
   );
