@@ -21,14 +21,16 @@ const Home = ({navigation}) => {
   }, [currentOffset]);
   const getDataPokemon = async () => {
     try {
-      const res = await axios.get(`${baseApi}?offset=${page}&limit=20`);
+      const res = await axios.get(
+        `${baseApi}?offset=${currentOffset}&limit=20`,
+      );
       setPokemon([...res.data.results]);
     } catch (error) {
       console.log(error);
     }
   };
   const nextPage = useCallback(() => {
-    setCurrentOffset(currentOffset + 1);
+    setCurrentOffset(currentOffset + 20);
     setPage(page + 1);
   }, [currentOffset, setPage]);
 
@@ -36,7 +38,7 @@ const Home = ({navigation}) => {
     if (currentOffset <= 0) {
       return;
     } else {
-      setCurrentOffset(currentOffset - 1);
+      setCurrentOffset(currentOffset - 20);
       setPage(page - 1);
     }
   }, [currentOffset, setPage]);
@@ -45,23 +47,14 @@ const Home = ({navigation}) => {
     <PokeCard name={item.name} navigation={navigation} />
   );
 
-  const renderHeader = () => {
+  const Header = () => {
     return (
       <View>
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: 'bold',
-            marginHorizontal: 10,
-            padding: 10,
-            color: 'black',
-          }}>
-          PokeDex
-        </Text>
+        <Text style={styles.HeadTitle}>PokeDex</Text>
       </View>
     );
   };
-  const renderFooter = () => {
+  const Footer = () => {
     return (
       <View
         style={{
@@ -71,26 +64,12 @@ const Home = ({navigation}) => {
           justifyContent: 'center',
           marginVertical: 20,
         }}>
-        <TouchableOpacity
-          onPress={prevPage}
-          style={{
-            backgroundColor: '#bb35a1',
-            paddingVertical: 14,
-            paddingHorizontal: 12,
-            borderRadius: 10,
-          }}>
-          <Text style={{color: '#fff'}}>Prev</Text>
+        <TouchableOpacity onPress={prevPage} style={styles.FooterPrev}>
+          <Text style={styles.FooterText}>Prev</Text>
         </TouchableOpacity>
         <Text style={{marginHorizontal: 10, color: 'black'}}>{page}</Text>
-        <TouchableOpacity
-          onPress={nextPage}
-          style={{
-            backgroundColor: '#77b7db',
-            paddingVertical: 14,
-            paddingHorizontal: 12,
-            borderRadius: 10,
-          }}>
-          <Text style={{color: '#fff'}}>Next</Text>
+        <TouchableOpacity onPress={nextPage} style={styles.FooterNext}>
+          <Text style={styles.FooterText}>Next</Text>
         </TouchableOpacity>
       </View>
     );
@@ -98,8 +77,8 @@ const Home = ({navigation}) => {
   return (
     <View>
       <FlatList
-        ListHeaderComponent={renderHeader}
-        ListFooterComponent={renderFooter}
+        ListHeaderComponent={Header}
+        ListFooterComponent={Footer}
         data={pokemon}
         renderItem={renderItem}
         numColumns={2}
@@ -110,4 +89,36 @@ const Home = ({navigation}) => {
 
 export default Home;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  HeadTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginHorizontal: 140,
+    color: 'black',
+    backgroundColor: '#f59127',
+    textAlign: 'center',
+    borderRadius: 20,
+    marginVertical: 1,
+  },
+  FooterPrev: {
+    width: 150,
+    backgroundColor: '#f59127',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    textAlign: 'center',
+  },
+  FooterNext: {
+    width: 150,
+    backgroundColor: '#77b7db',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+  FooterText: {
+    textAlign: 'center',
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 19,
+  },
+});

@@ -17,6 +17,7 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Input from '../../commponent/input';
 import {myDb} from '../../helpers/myDb';
+import {NavigationContainer} from '@react-navigation/native';
 
 const messaging = messagingProvider();
 
@@ -38,8 +39,6 @@ const Login = ({navigation}) => {
         if (isUpdate) {
           const result = await myDb
             .ref(`users/`)
-            .orderByChild('emailId')
-            .equalTo(values.email)
             .once('value')
             .then(async snapshot => {
               if (snapshot.val() == null) {
@@ -47,7 +46,7 @@ const Login = ({navigation}) => {
                 return false;
               }
               let userData = Object.values(snapshot.val())[0];
-              navigation.replace('Home');
+              navigation.replace('Home', {userData: userData});
             });
           // console.log(result);
           // if (result.val) {
@@ -72,9 +71,9 @@ const Login = ({navigation}) => {
       onSubmit={handleSubmit}
       validationSchema={signInSchema}>
       {({handleChange, handleBlur, handleSubmit, values, errors}) => (
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
           <Image />
-          <Text>Welcom To Pokemon Portal</Text>
+          <Text style={styles.HeadTitle}>Welcom To Pokemon Portal</Text>
           <View style={{top: 30}}>
             <Text style={styles.TextInput}>Email</Text>
             <Input
@@ -98,10 +97,10 @@ const Login = ({navigation}) => {
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.textButton}>Sign In</Text>
           </TouchableOpacity>
-          <View>
-            <Text>Belum Punya Akun?</Text>
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <Text style={styles.have}>Belum Punya Akun?</Text>
             <TouchableOpacity onPress={() => navigation.replace('Register')}>
-              <Text>Register</Text>
+              <Text style={styles.log}>Register</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -113,6 +112,17 @@ const Login = ({navigation}) => {
 export default Login;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginVertical: 170,
+  },
+  HeadTitle: {
+    color: 'black',
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    top: 15,
+  },
   TextInput: {
     left: 41,
   },
@@ -121,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     width: 100,
     height: 50,
-    backgroundColor: '#808080',
+    backgroundColor: '#3dde02',
     borderRadius: 10,
     marginHorizontal: 150,
   },
@@ -129,5 +139,16 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     marginTop: 16,
+  },
+  have: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: 'black',
+  },
+  log: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#3dde02',
+    left: 4,
   },
 });

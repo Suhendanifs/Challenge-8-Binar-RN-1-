@@ -20,12 +20,6 @@ const messaging = messagingProvider();
 
 const Register = ({navigation}) => {
   const handleSubmit = async values => {
-    let data = {
-      id: uuid.v4(),
-      name: values.username,
-      emailId: values.email,
-      password: values.password,
-    };
     try {
       const res = await auth().createUserWithEmailAndPassword(
         values.email,
@@ -35,15 +29,15 @@ const Register = ({navigation}) => {
       const token = await messaging.getToken();
       if (token) {
         const payload = {
-          displayname: data.name,
-          email: data.emailId,
+          displayname: res.user.displayName,
+          email: res.user.email,
+          _id: res.user.uid,
           notifToken: token,
-          id: data.id,
         };
-        await myDb.ref(`users/${data.id}`).set(payload);
+        await myDb.ref(`users/${res.user.uid}`).set(payload);
         Alert.alert('Registrasi Berhasil', 'silahkan login', [
           {
-            text: 'Next',
+            text: 'Login',
             onPress: () => {
               console.log(values);
               navigation.navigate('Login');
@@ -51,10 +45,6 @@ const Register = ({navigation}) => {
           },
         ]);
       }
-      await myDb
-        .ref(`users/${data.id}`)
-        .set(data)
-        .then(() => {});
     } catch (error) {
       Alert.alert('Error', error);
     }
@@ -76,9 +66,9 @@ const Register = ({navigation}) => {
       onSubmit={handleSubmit}
       validationSchema={signUpSchema}>
       {({handleChange, handleBlur, handleSubmit, values, errors}) => (
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
           <Image />
-          <Text>Enter The Pokemon World</Text>
+          <Text style={styles.HeadTitle}>Enter The Pokemon World</Text>
           <View style={{top: 30}}>
             <Text style={styles.TextInput}>User Name</Text>
             <Input
@@ -111,10 +101,10 @@ const Register = ({navigation}) => {
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.textButton}>Sign Up</Text>
           </TouchableOpacity>
-          <View>
-            <Text>Sudah Punya Akun?</Text>
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <Text style={styles.have}>Sudah Punya Akun?</Text>
             <TouchableOpacity onPress={() => navigation.replace('Login')}>
-              <Text>Login</Text>
+              <Text style={styles.log}>Login</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -126,6 +116,17 @@ const Register = ({navigation}) => {
 export default Register;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginVertical: 140,
+  },
+  HeadTitle: {
+    color: 'black',
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    top: 15,
+  },
   TextInput: {
     left: 41,
   },
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     width: 100,
     height: 50,
-    backgroundColor: '#808080',
+    backgroundColor: '#3dde02',
     borderRadius: 10,
     marginHorizontal: 150,
   },
@@ -142,5 +143,16 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     marginTop: 16,
+  },
+  have: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: 'black',
+  },
+  log: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#3dde02',
+    left: 4,
   },
 });

@@ -14,11 +14,12 @@ import {baseApi} from '../../helpers/API';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {myDb} from '../../helpers/myDb';
 
-const Details = ({navigation, route}) => {
+const Detail = ({navigation, route}) => {
   const {_user} = useSelector(state => state.login);
+  const [pokemonBag, SetPokemonBag] = useState({name: []});
   const [dataPokemon, setDataPokemon] = useState({
     name: '',
-    photo: '',
+    pict: 'pict',
     height: '',
     weight: '',
     species: '',
@@ -38,13 +39,14 @@ const Details = ({navigation, route}) => {
   const getDataPoke = async () => {
     try {
       const res = await axios.get(`${baseApi}/${route.params.cardData}`);
+      SetPokemonBag(res.data);
       console.log('DATA RES: ', res.data);
       console.log(
         'DATA TYPES : ',
         res.data.types.map(item => item.type),
       );
       handleDataPokemon('name', res.data.name);
-      handleDataPokemon('photo', res.data.sprites.front_default);
+      handleDataPokemon('pict', res.data.sprites.front_default);
       handleDataPokemon('height', res.data.height);
       handleDataPokemon('weight', res.data.weight);
       handleDataPokemon('species', res.data.species.name);
@@ -61,177 +63,79 @@ const Details = ({navigation, route}) => {
       console.log(error);
     }
   };
-  // const catchPokemon = async payload => {
-  //   const randomCatch = Math.ceil(Math.random() * 100);
-  //   console.log(randomCatch);
-  //   if (randomCatch > 70) {
-  //     myDB.ref(`bag/${_user}`).update({});
-  //     console.log(await myDB.ref(`bag/${_user}/`).once('value'));
-  //     Alert.alert(`${name} Catched and stored to your bag!`);
-  //     navigation.navigate('Bag');
-  //   } else {
-  //     Alert.alert(`${name} has Released from the Pokeball!`);
-  //   }
-  // };
+
   useEffect(() => {
     getDataPoke();
-    getPokeBag();
   }, []);
-  const [catchs, setCatchs] = useState({name: []});
-  const [isTrue, setIsTrue] = useState(false);
-
-  const getPokeBag = async () => {
-    const res = await myDb.ref(`pokeBag/${_user.id}/`).once('value');
-
-    console.log('RES POKEBAG: ', res.val());
-    setCatchs(res.val().name);
-  };
-  const randomGenerator = useCallback(
-    async value => {
-      let random = Math.ceil(Math.random() * 30);
-      if (value === random) {
-        setIsTrue(true);
-        try {
-          await myDb.ref(`pokeBag/${_user.id}`).update({
-            name: [...catchs, route.params.cardData],
-          });
-          Alert.alert('Horee', 'Anda mendapatkan pokemon', [
-            {
-              text: 'Lihat Bag',
-              onPress: () => {
-                navigation.navigate('PokeBag');
-              },
-            },
-            {text: 'OK', onPress: () => console.log('OK Pressed!')},
-          ]);
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        setIsTrue(false);
-        Alert.alert('Yahhh', 'Anda belum beruntung');
-      }
-    },
-    [catchs],
-  );
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <View>
-        <View>
-          <Text style={{fontSize: 18, fontWeight: 'bold', color: 'black'}}>
-            Pokemon Detail
-          </Text>
-          <TouchableOpacity
-            onPress={() => randomGenerator(Math.ceil(Math.random() * 30))}
+        <Text style={styles.pokeTitle}>Pokemon Detail</Text>
+        <TouchableOpacity
+          style={{
+            top: -30,
+            left: 158,
+            backgroundColor: '#f0271d',
+            width: 90,
+            height: 40,
+            borderRadius: 10,
+          }}>
+          <Text
             style={{
-              left: 300,
-              backgroundColor: 'orange',
-              width: 90,
-              height: 30,
-              borderRadius: 10,
+              top: 5,
+              color: 'black',
+              paddingLeft: 20,
+              fontSize: 20,
+              fontWeight: '500',
             }}>
-            <Text
-              style={{
-                color: 'black',
-                paddingLeft: 20,
-                // paddingVertical: 4,
-                fontSize: 20,
-                fontWeight: '500',
-              }}>
-              Catch
-            </Text>
-          </TouchableOpacity>
+            Catch
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View>
+        <View style={styles.containerImage}>
+          <Image source={{uri: dataPokemon.pict}} style={styles.pokeImage} />
+          <Text style={styles.pokeName}>{dataPokemon.name}</Text>
         </View>
-        <View>
-          <View>
-            <Image source={{uri: dataPokemon.photo}} style={styles.pokeImage} />
-            <Text
-              style={{
-                fontSize: 26,
-                textTransform: 'capitalize',
-                fontWeight: 'bold',
-                color: 'black',
-              }}>
-              {dataPokemon.name}
-            </Text>
-          </View>
-          <View>
-            <View style={{flexDirection: 'row'}}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  color: 'black',
-                }}>
-                Species :
-              </Text>
-              <View>
-                <Text
-                  style={{
-                    textTransform: 'capitalize',
-                    left: 3,
-                    fontSize: 18,
-                    color: 'black',
-                  }}>
-                  {dataPokemon.species}
-                </Text>
-              </View>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold', color: 'black'}}>
-                Height
-              </Text>
-              <View>
-                <Text
-                  style={{
-                    textTransform: 'capitalize',
-                    left: 3,
-                    fontSize: 18,
-                    color: 'black',
-                  }}>
-                  : {dataPokemon.height}
-                </Text>
-              </View>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold', color: 'black'}}>
-                Weight
-              </Text>
-              <View>
-                <Text
-                  style={{
-                    textTransform: 'capitalize',
-                    left: 3,
-                    fontSize: 18,
-                    color: 'black',
-                  }}>
-                  : {dataPokemon.weight}
-                </Text>
-              </View>
+        <View style={styles.stat}>
+          <View style={styles.card}>
+            <Text style={styles.labelSkillStat}>Species</Text>
+            <View>
+              <Text style={styles.pokeStat}>{dataPokemon.species}</Text>
             </View>
           </View>
-          <View style={{top: 10}}>
-            <Text style={{fontSize: 18, fontWeight: 'bold', color: 'black'}}>
-              Type
-            </Text>
+          <View style={styles.card}>
+            <Text style={styles.labelSkillStat}>Height</Text>
+            <View>
+              <Text style={styles.pokeStat}>{dataPokemon.height}</Text>
+            </View>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.labelSkillStat}>Weight</Text>
+            <View>
+              <Text style={styles.pokeStat}>{dataPokemon.weight}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.statSkill}>
+          <View style={styles.cards}>
+            <Text style={styles.labelSkill}>Type</Text>
             <FlatList
               data={dataPokemon.type}
               keyExtractor={item => item.name}
               renderItem={item => {
-                return <Text style={styles.card}>{item.item.name}</Text>;
+                return <Text style={styles.pokeSkill}>{item.item.name}</Text>;
               }}
             />
           </View>
-          <View style={{top: 20}}>
-            <Text style={{fontSize: 18, fontWeight: 'bold', color: 'black'}}>
-              Ability
-            </Text>
+          <View style={styles.cards}>
+            <Text style={styles.labelSkill}>Ability</Text>
             <FlatList
               data={dataPokemon.ability}
               keyExtractor={item => item.name}
               renderItem={item => {
-                return <Text style={styles.card}>{item.item.name}</Text>;
+                return <Text style={styles.pokeSkill}>{item.item.name}</Text>;
               }}
             />
           </View>
@@ -241,27 +145,94 @@ const Details = ({navigation, route}) => {
   );
 };
 
-export default Details;
+export default Detail;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: 'grey'},
+  container: {backgroundColor: '#e8e7e6', flex: 1},
+  containerImage: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   pokeImage: {
-    height: 200,
-    width: 200,
+    height: 150,
+    width: 150,
     resizeMode: 'cover',
   },
   pokeName: {
-    color: 'black',
-    fontSize: 18,
+    fontSize: 26,
     textTransform: 'capitalize',
+    fontWeight: 'bold',
+    color: 'black',
   },
   pokeTitle: {
     color: 'black',
-    fontSize: 16,
-    marginBottom: 8,
+    fontSize: 25,
+    marginVertical: 50,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   pokeDetails: {
     color: 'black',
     fontSize: 20,
+  },
+
+  stat: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  pokeStat: {
+    color: 'black',
+    fontSize: 20,
+    marginBottom: 8,
+    textTransform: 'capitalize',
+  },
+  card: {
+    top: 10,
+    width: 130,
+    height: 75,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'orange',
+  },
+  cards: {
+    top: 20,
+    width: 100,
+    height: 120,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#1c9dd9',
+    backgroundColor: '#d2d3d4',
+  },
+  statSkill: {
+    top: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  pokeSkill: {
+    color: 'black',
+    fontSize: 15,
+    textTransform: 'capitalize',
+  },
+  labelSkill: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    backgroundColor: '#1c9dd9',
+    width: 98,
+    borderRadius: 8,
+    paddingLeft: 10,
+    paddingBottom: 6,
+  },
+  labelSkillStat: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
+    backgroundColor: 'orange',
+    width: 126,
+    borderRadius: 8,
+    paddingLeft: 10,
+    paddingBottom: 6,
   },
 });

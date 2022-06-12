@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Login, Register, Home, Detail, pokeBag, Bag} from '../screens';
+import {Login, Register, Home, Detail, Bag} from '../screens';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Top from './top';
 
